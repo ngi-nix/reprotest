@@ -24,6 +24,10 @@ buildPythonApplication {
        (callPackage ./rstr.nix {})
      ];
 
+  postFixup = ''
+    wrapPythonProgramsIn $out/lib/python?.?/site-packages/reprotest/virt/ "$out $pythonPath"
+  '';
+
   src = fetchFromGitLab {
     domain = "salsa.debian.org";
     owner = "reproducible-builds";
