@@ -1,4 +1,6 @@
-{ python3Packages }:
+{ python3Packages
+, lib
+}:
 
 with python3Packages;
 
@@ -12,5 +14,13 @@ buildPythonPackage {
   src = fetchPypi {
     inherit pname version;
     sha256 = "sha256-XeqCIybkGODJgWyc0Urpx74tTNQzQEPDl/ICvCri7aQ=";
+  };
+
+  meta = with lib; {
+    homepage = "https://pypi.org/project/rstr/";
+    description = "Generate random strings in Python";
+    license = licenses.unfree; # idk which bsd it is
+    platforms = platforms.unix;
+    maintainers = with maintainers; [ magic_rb ];
   };
 }

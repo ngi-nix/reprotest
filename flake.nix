@@ -24,7 +24,11 @@
 
       defaultPackage = forAllSystems (system:
         let
-          pkgs = import nixpkgs { inherit system; overlays = [ self.overlays.reprotest ]; };
+          pkgs = import nixpkgs
+            { inherit system;
+              overlays = [ self.overlays.reprotest ];
+              config.allowUnfree = true;
+            };
         in
           pkgs.reprotest
       );

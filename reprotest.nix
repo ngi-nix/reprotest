@@ -1,6 +1,7 @@
 { fetchFromGitLab
 , python3Packages
 , callPackage
+, lib
 
 , diffoscope
 , disorderfs 
@@ -34,5 +35,13 @@ buildPythonApplication {
     repo = "reprotest";
     rev = version;
     sha256 = "sha256-ibdjBzIUfiBLa9ELXT6N6b1KBNZh6Y694Q0ZNHv072g=";
+  };
+
+  meta = with lib; {
+    homepage = "https://salsa.debian.org/reproducible-builds/reprotest";
+    description = "Reprotest builds the same source code twice in different environments, and then checks the binaries produced by each build for differences.";
+    license = licenses.unfree; # license unspeficied
+    platforms = platforms.unix;
+    maintainers = with maintainers; [ magic_rb ];
   };
 }
