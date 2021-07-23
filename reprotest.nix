@@ -25,6 +25,8 @@ buildPythonApplication {
        (callPackage ./rstr.nix {})
      ];
 
+  patches = [ ./patches/0001-Add-NixOS-system-interface.patch ]; 
+
   postFixup = ''
     wrapPythonProgramsIn $out/lib/python?.?/site-packages/reprotest/virt/ "$out $pythonPath"
   '';

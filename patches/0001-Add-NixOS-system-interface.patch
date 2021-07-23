@@ -1,0 +1,80 @@
+From f4a120e43898561c8ed2ce476b7b797c1b0a4ff9 Mon Sep 17 00:00:00 2001
+From: Magic_RB <magic_rb@redalder.org>
+Date: Fri, 23 Jul 2021 13:07:19 +0200
+Subject: [PATCH] Add NixOS system interface
+
+Signed-off-by: Magic_RB <magic_rb@redalder.org>
+---
+ reprotest/lib/adt_testbed.py            |  2 ++
+ reprotest/lib/system_interface/nixos.py | 39 +++++++++++++++++++++++++
+ 2 files changed, 41 insertions(+)
+ create mode 100644 reprotest/lib/system_interface/nixos.py
+
+diff --git a/reprotest/lib/adt_testbed.py b/reprotest/lib/adt_testbed.py
+index 8ebef39..e8d5794 100644
+--- a/reprotest/lib/adt_testbed.py
++++ b/reprotest/lib/adt_testbed.py
+@@ -41,6 +41,7 @@ from reprotest.lib.system_interface.debian import DebianInterface
+ from reprotest.lib.system_interface.arch import ArchInterface
+ from reprotest.lib.system_interface.fedora import FedoraInterface
+ from reprotest.lib.system_interface.guix import GuixInterface
++from reprotest.lib.system_interface.nixos import NixOSInterface
+ from reprotest.lib import adtlog
+ from reprotest.lib import VirtSubproc
+ 
+@@ -49,6 +50,7 @@ SYSTEM_INTERFACES = {
+         'arch': ArchInterface,
+         'fedora': FedoraInterface,
+         'guix': GuixInterface,
++        'nixos': NixOSInterface,
+         }
+ 
+ timeouts = {
+diff --git a/reprotest/lib/system_interface/nixos.py b/reprotest/lib/system_interface/nixos.py
+new file mode 100644
+index 0000000..bb02f7e
+--- /dev/null
++++ b/reprotest/lib/system_interface/nixos.py
+@@ -0,0 +1,39 @@
++# adt_testbed.py is part of autopkgtest
++# autopkgtest is a tool for testing Debian binary packages. The
++# system_interface module is an addition for reprotest to make
++# this module distro-agnostic
++#
++# autopkgtest is Copyright (C) 2006-2015 Canonical Ltd.
++# the system_interface module is Copyright (C) 2017 Santiago Torres-Arias
++#
++# This program is free software; you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation; either version 2 of the License, or
++# (at your option) any later version.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++#
++# See the file CREDITS for a full list of credits information (often
++# installed as /usr/share/doc/autopkgtest/CREDITS).
++import subprocess
++
++from . import SystemInterface
++
++class NixOSInterface(SystemInterface):
++    """
++        SystemInterface implementation for GNU Guix hosts. Contains commands that
++        are specific to the GNU Guix toolchain.
++    """
++
++    def get_arch(self):
++        return ['uname', '-m']
++
++    def can_query_packages(self):
++        return False
+-- 
+2.32.0
+
