@@ -10,65 +10,78 @@
       forAllSystems = forAllSystems' supportedSystems;
     in
       with nixpkgs.lib;
-    {
-      overlays.reprotest = final: prev:
-        {
-          reprotest = prev.callPackage ./reprotest.nix {};
-          reprotestMinimal = final.reprotest.override
-            { diffoscope = null;
-              disorderfs = null;
-              libfaketime = null;
-              debianutils = null;
-              qemu = null;
-            };
-        };
+      {
+        overlays.reprotest = final: prev:
+          {
+            reprotest = prev.callPackage ./reprotest.nix {};
+            reprotestMinimal = final.reprotest.override
+              { diffoscope = null;
+                disorderfs = null;
+                libfaketime = null;
+                debianutils = null;
+                qemu = null;
+              };
+          };
 
-      overlay = self.overlays.reprotest;
+        overlay = self.overlays.reprotest;
 
-      defaultPackage = forAllSystems (system:
-        let
-          pkgs = import nixpkgs
-            { inherit system;
-              overlays = [ self.overlays.reprotest ];
-              config.allowUnfree = true;
-            };
-        in
-          pkgs.reprotest
-      );
+        defaultPackage = forAllSystems (system:
+          let
+            pkgs = import nixpkgs
+              { inherit system;
+                overlays = [ self.overlays.reprotest ];
+                config.allowUnfree = true;
+              };
+          in
+            pkgs.reprotest
+        );
 
-      packages = forAllSystems (system:
-        let
-          pkgs = import nixpkgs
-            { inherit system;
-              overlays = [ self.overlays.reprotest ];
-              config.allowUnfree = true;
-            };
-        in
-          { inherit (pkgs) reprotest reprotestMinimal;
-          }
-      );
+        packages = forAllSystems (system:
+          let
+            pkgs = import nixpkgs
+              { inherit system;
+                overlays = [ self.overlays.reprotest ];
+                config.allowUnfree = true;
+              };
+          in
+            { inherit (pkgs) reprotest reprotestMinimal;
+            }
+        );
 
-      devShell = forAllSystems (system:
-        let
-          pkgs = import nixpkgs
-            { inherit system;
-              overlays = [ self.overlays.reprotest ];
-              config.allowUnfree = true;
-            };
-        in
-          pkgs.mkShell {
-            nativeBuildInputs = with pkgs;
-              [ diffoscope disorderfs debianutils qemu
-                python3
-              ];
-            buildInputs = with pkgs;
-              [ libfaketime
-              ] ++
-              (with python3Packages;
-                [ distro libarchive-c python_magic setuptools
-                  (pkgs.callPackage ./rstr.nix {})
-                ]);
-          }
-      );
-    };
+        apps = mapAttrs (_: v:
+          mapAttrs (_: a:
+            {
+              type = "app";
+              program = a;
+            }
+          ) v
+        ) self.packages;
+
+        defaultApp = mapAttrs (_: v:
+          v.reprotest
+        ) self.apps;
+
+        devShell = forAllSystems (system:
+          let
+            pkgs = import nixpkgs
+              { inherit system;
+                overlays = [ self.overlays.reprotest ];
+                config.allowUnfree = true;
+              };
+          in
+            pkgs.mkShell {
+              nativeBuildInputs = with pkgs;
+                [ diffoscope disorderfs debianutils qemu
+                  python3
+                ];
+              buildInputs = with pkgs;
+                [ libfaketime
+                ] ++
+                (with python3Packages;
+                  [ distro libarchive-c python_magic setuptools
+                    (pkgs.callPackage ./rstr.nix {})
+                  ]);
+            }
+        );
+      };
 }
